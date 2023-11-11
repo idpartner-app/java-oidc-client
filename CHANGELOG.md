@@ -1,0 +1,23 @@
+0.0.1
+
+- Flexible Configuration:
+  - Supports various authentication methods including client_secret_basic and private_key_jwt.
+  - Configurable token endpoint auth method.
+  - Configurable JWKS for signing and encryption.
+- Authorization:
+  - Generation of authorization URL with support for different scopes, and parameters like scope and claims.
+  - Support for both standard and pushed authorization requests.
+  - Generation of proofs including state, nonce, and code verifier for PKCE.
+- Token Acquisition:
+  - Token exchange functionality for obtaining tokens from an authorization code.
+- User Information Retrieval:
+  - Userinfo endpoint interaction to retrieve user information using an access token.
+- JWT Handling:
+  - JWT decoding support including handling of encrypted JWTs.
+  - JWT signing and encryption support.
+- Utilities:
+  - Fetching provider configuration from the well-known configuration endpoint.
+- Error Handling:
+  - Comprehensive error handling for various steps in the OIDC interaction process.
+- Example:
+  - Spring boot example usage provided in the examples folder demonstrating how to use the IDPartner class for OIDC interactions.
