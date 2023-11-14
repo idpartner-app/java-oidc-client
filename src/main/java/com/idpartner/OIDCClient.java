@@ -88,7 +88,7 @@ public class OIDCClient {
    */
   public OIDCClient(Map<String, String> config) {
     if (config == null || config.isEmpty()) {
-      throw new IllegalArgumentException("Config missing.");
+      throw new IllegalArgumentException("Config is missing");
     }
 
     Map<String, String> defaultConfig = new HashMap<>();

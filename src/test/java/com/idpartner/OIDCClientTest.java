@@ -19,8 +19,31 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OIDCClientTest {
+  @Nested
+  class Config {
+    @Test
+    void testConstructorThrowsAnErrorIfConfigIsNotProvided() {
+      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        new OIDCClient(null);
+      });
+      assertEquals("Config is missing", exception.getMessage());
+    }
+
+    @Test
+    void testConstructorThrowsAnErrorIfAuthMethodIsNotSupported() {
+      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        Map<String, String> config = new HashMap<>();
+        config.put("token_endpoint_auth_method", "unsupported");
+        new OIDCClient(config);
+      });
+
+      assertTrue(exception.getMessage().contains("Unsupported token_endpoint_auth_method 'unsupported'"));
+    }
+  }
+
   @Nested
   class PublicJWKS {
     @Test
