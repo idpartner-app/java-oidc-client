@@ -61,6 +61,11 @@ import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 
+/**
+ * The OIDCClient class handles the interaction with an OpenID Connect provider.
+ * It includes functionalities for generating authorization URLs, handling
+ * tokens, and retrieving user information.
+ */
 public class OIDCClient {
   private static final String[] SUPPORTED_AUTH_METHODS = {
       "client_secret_basic",
@@ -73,6 +78,14 @@ public class OIDCClient {
 
   private Map<String, Object> config;
 
+  /**
+   * Constructs an OIDCClient with the specified configuration.
+   *
+   * @param config A map containing configuration parameters such as client ID,
+   *               client secret, etc.
+   * @throws IllegalArgumentException If the provided configuration is null or
+   *                                  invalid.
+   */
   public OIDCClient(Map<String, String> config) {
     if (config == null || config.isEmpty()) {
       throw new IllegalArgumentException("Config missing.");
@@ -120,16 +133,32 @@ public class OIDCClient {
     this.config.putAll(jwksConfig);
   }
 
+  /**
+   * Generates proofs needed for the OIDC flow such as state, nonce, and code
+   * verifier.
+   *
+   * @return A map containing generated proofs (state, nonce, codeVerifier).
+   */
   public Map<String, Object> generateProofs() {
     Map<String, Object> proofs = new HashMap<>();
 
     proofs.put("state", new State());
     proofs.put("nonce", new Nonce());
-    proofs.put("code_verifier", new CodeVerifier());
+    proofs.put("codeVerifier", new CodeVerifier());
 
     return proofs;
   }
 
+  /**
+   * Constructs the authorization URL based on provided parameters.
+   *
+   * @param query Query parameters for the authorization request.
+   * @param proofs Proofs such as state and nonce.
+   * @param scope Requested OIDC scopes.
+   * @param extraAuthorizationParams Additional parameters for the authorization request.
+   * @return The constructed authorization URI.
+   * @throws Exception If there is an error constructing the URI.
+   */
   public URI getAuthorizationUrl(Map<String, String[]> query, Map<String, Object> proofs, String scope,
       Map<String, Object> extraAuthorizationParams) throws Exception {
     if (query == null)
@@ -166,7 +195,7 @@ public class OIDCClient {
         .state((State) proofs.get("state"))
         .nonce((Nonce) proofs.get("nonce"))
         .responseMode(ResponseMode.JWT)
-        .codeChallenge((CodeVerifier) proofs.get("code_verifier"), CodeChallengeMethod.S256)
+        .codeChallenge((CodeVerifier) proofs.get("codeVerifier"), CodeChallengeMethod.S256)
         .customParameter("x-fapi-interaction-id", UUID.randomUUID().toString())
         .customParameter("identity_provider_id", getFirstElementSafely(query.get("idp_id")))
         .customParameter("idpartner_token", getFirstElementSafely(query.get("idpartner_token")))
@@ -185,6 +214,11 @@ public class OIDCClient {
     return new URI(authorizationEndpoint + "?request_uri=" + requestUri.toString());
   }
 
+  /**
+   * Retrieves the public JSON Web Key Set (JWKS).
+   *
+   * @return A JSON string representation of the public JWKS.
+   */
   public String publicJwks() {
     if (this.config.get("jwkSet") == null) {
       return "{}";
@@ -192,6 +226,14 @@ public class OIDCClient {
     return ((JWKSet) this.config.get("jwkSet")).toString(true);
   }
 
+  /**
+   * Handles the token exchange process in the OIDC flow.
+   *
+   * @param query  Query parameters from the OIDC provider response.
+   * @param proofs Proofs such as the code verifier.
+   * @return The OIDC tokens obtained from the token endpoint.
+   * @throws Exception If there is an error processing the token request.
+   */
   public OIDCTokens token(Map<String, String[]> query, Map<String, Object> proofs) throws Exception {
     OIDCProviderMetadata providerMetadata = (OIDCProviderMetadata) this.config.get("providerMetadata");
     JWTClaimsSet decodedJwt = decodeJwt(getFirstElementSafely(query.get("response")), providerMetadata);
@@ -205,7 +247,7 @@ public class OIDCClient {
         new AuthorizationCodeGrant(
             new AuthorizationCode(code),
             new URI(this.config.get("redirect_uri").toString()),
-            (CodeVerifier) proofs.get("code_verifier")));
+            (CodeVerifier) proofs.get("codeVerifier")));
 
     HTTPResponse tokenResponse = tokenRequest.toHTTPRequest().send();
 
@@ -218,6 +260,13 @@ public class OIDCClient {
     return tokenSuccessResponse.getOIDCTokens();
   }
 
+  /**
+   * Retrieves user information from the OIDC provider.
+   *
+   * @param accessToken The access token to authenticate the request.
+   * @return A JSON string with the user information.
+   * @throws Exception If there is an error during the request.
+   */
   public String userinfo(AccessToken accessToken) throws Exception {
     OIDCProviderMetadata providerMetadata = (OIDCProviderMetadata) this.config.get("providerMetadata");
     URI userInfoEndpoint = providerMetadata.getUserInfoEndpointURI();

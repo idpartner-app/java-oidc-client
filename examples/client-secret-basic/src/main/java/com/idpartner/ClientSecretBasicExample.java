@@ -38,6 +38,7 @@ public class ClientSecretBasicExample {
       System.out.println("Failed to load config.json");
       System.exit(1);
     }
+    System.setProperty("server.port", String.valueOf(jsonConfig.getPort()));
     SpringApplication.run(ClientSecretBasicExample.class, args);
 
     Map<String, String> config = new HashMap<>();
