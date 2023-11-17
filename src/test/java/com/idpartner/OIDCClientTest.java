@@ -106,7 +106,6 @@ public class OIDCClientTest {
     URI authorizationUrl = oidcClient.getAuthorizationUrl(new HashMap<>(), proofs, scope, new HashMap<>());
 
     assertNotNull(authorizationUrl);
-    System.out.println(authorizationUrl.toString());
     assertTrue(authorizationUrl.toString().equals(
         "https://auth-api.idpartner.com/oidc-proxy/auth/select-accounts?client_id=test-client-id&visitor_id=&scope=openid+email&claims="));
   }

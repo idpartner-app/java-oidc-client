@@ -32,11 +32,25 @@ Please check the [examples folder](./examples/)
 
 ### Running Tests
 
-After checking out the repo, install the necessary dependencies and run the tests by executing:
+- Ensure the port 9001 is **available**
+- After checking out the repo, install the necessary dependencies and run the tests by executing:
 
 ```bash
 $ mvn test
 ```
+
+## Release
+
+- Ensure the port 9001 is **available**
+- Get the GPG key and passphrase
+- Import it to your local and set it as the default key
+- copy the [settings.xml.example](./settings.xml) to `~/.m2/settings.xml`. [More details](https://central.sonatype.org/publish/publish-maven/#distribution-management-and-authentication)
+- Define the next environment variables:
+	- OSSRH_USERNAME
+	- OSSRH_PASSWORD
+	- GPG_KEY_ID
+	- GPG_PASSPHRASE
+- Go to the project root folder and execute: `mvn clean deploy -P ossrh`
 
 ## Contributing
 
@@ -45,4 +59,3 @@ Bug reports and pull requests are welcome on GitHub at [https://github.com/idpar
 ## License
 
 This package is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-```
