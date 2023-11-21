@@ -50,7 +50,7 @@ $ mvn test
 	- OSSRH_PASSWORD
 	- GPG_KEY_ID
 	- GPG_PASSPHRASE
-- Go to the project root folder and execute: `mvn clean deploy -P ossrh`
+- Further [deploy information](https://central.sonatype.org/publish/publish-maven/#nexus-staging-maven-plugin-for-deployment-and-release). Go to the project root folder and execute: `mvn clean deploy`.
 
 ## Contributing
 
